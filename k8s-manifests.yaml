@@ -1,0 +1,227 @@
+# ─── Namespace ───────────────────────────────────────────────────
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: smartdoor
+  labels:
+    app: smartdoor
+    managed-by: terraform
+
+---
+# ─── ConfigMap ────────────────────────────────────────────────────
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: smartdoor-config
+  namespace: smartdoor
+data:
+  REDIS_URL: "redis://smartdoor-redis:6379"
+  APP_ENV: "production"
+  LOG_LEVEL: "INFO"
+
+---
+# ─── Secret (base64 encoded) ──────────────────────────────────────
+apiVersion: v1
+kind: Secret
+metadata:
+  name: smartdoor-secrets
+  namespace: smartdoor
+type: Opaque
+stringData:                            # use sealed-secrets in real prod
+  jwt-secret: "REPLACE_WITH_STRONG_SECRET"
+  db-password: "REPLACE_WITH_DB_PASS"
+
+---
+# ─── Deployment ───────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smartdoor-api
+  namespace: smartdoor
+  labels:
+    app: smartdoor-api
+    version: v2.0.0
+    environment: production
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: smartdoor-api
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0          # Zero-downtime deploys
+  template:
+    metadata:
+      labels:
+        app: smartdoor-api
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: smartdoor-sa
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
+      containers:
+      - name: smartdoor-api
+        image: ghcr.io/smartdoor-io/smartdoor-api:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+        - name: JWT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: smartdoor-secrets
+              key: jwt-secret
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: smartdoor-config
+              key: REDIS_URL
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: [ALL]
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values: [smartdoor-api]
+              topologyKey: topology.kubernetes.io/zone
+
+---
+# ─── Service ──────────────────────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: smartdoor-service
+  namespace: smartdoor
+  labels:
+    app: smartdoor-api
+spec:
+  selector:
+    app: smartdoor-api
+  ports:
+  - name: http
+    port: 8000
+    targetPort: 8000
+  type: ClusterIP
+
+---
+# ─── Ingress ──────────────────────────────────────────────────────
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: smartdoor-ingress
+  namespace: smartdoor
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+spec:
+  tls:
+  - hosts: [api.smartdoor.io]
+    secretName: smartdoor-tls
+  rules:
+  - host: api.smartdoor.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: smartdoor-service
+            port:
+              number: 8000
+
+---
+# ─── HPA — Horizontal Pod Autoscaler ─────────────────────────────
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: smartdoor-hpa
+  namespace: smartdoor
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: smartdoor-api
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Pods
+        value: 2
+        periodSeconds: 60
+    scaleDown:
+      stabilizationWindowSeconds: 300   # Conservative — FinOps stability
+      policies:
+      - type: Pods
+        value: 1
+        periodSeconds: 120
+
+---
+# ─── ResourceQuota — FinOps cost governance ──────────────────────
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: smartdoor-quota
+  namespace: smartdoor
+spec:
+  hard:
+    requests.cpu: "4"
+    requests.memory: "4Gi"
+    limits.cpu: "8"
+    limits.memory: "8Gi"
+    pods: "20"
+    persistentvolumeclaims: "5"

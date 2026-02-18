@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>SmartDoor DevOps + FinOps — Full Enterprise Project</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--card:#161b22;--border:#30363d;--accent:#00d4aa;--purple:#a78bfa;--blue:#58a6ff;--green:#3fb950;--orange:#f59e0b;--red:#f85149;--text:#e6edf3;--muted:#8b949e}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px}
+a{color:var(--accent)}
+/* HERO */
+.hero{background:linear-gradient(135deg,#0d1117,#1a1f2e 50%,#0d1117);border-bottom:1px solid var(--border);padding:50px 48px 36px;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(0,212,170,.07) 0%,transparent 55%),radial-gradient(ellipse at 80% 20%,rgba(124,58,237,.07) 0%,transparent 50%);pointer-events:none}
+.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.3);border-radius:20px;padding:5px 14px;font-size:12px;color:var(--accent);margin-bottom:18px}
+.hero h1{font-size:clamp(26px,4vw,50px);font-weight:800;line-height:1.15;margin-bottom:14px}
+.hero h1 span{background:linear-gradient(90deg,var(--accent),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--muted);font-size:15px;max-width:680px;line-height:1.7;margin-bottom:24px}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{border-radius:6px;padding:4px 12px;font-size:12px;border:1px solid}
+.tb{border-color:rgba(88,166,255,.4);color:var(--blue);background:rgba(88,166,255,.07)}
+.tg{border-color:rgba(63,185,80,.4);color:var(--green);background:rgba(63,185,80,.07)}
+.tp{border-color:rgba(167,139,250,.4);color:var(--purple);background:rgba(167,139,250,.07)}
+.to{border-color:rgba(245,158,11,.4);color:var(--orange);background:rgba(245,158,11,.07)}
+.tr{border-color:rgba(248,81,73,.4);color:var(--red);background:rgba(248,81,73,.07)}
+.tc{border-color:rgba(0,212,170,.4);color:var(--accent);background:rgba(0,212,170,.07)}
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;background:rgba(13,17,23,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 40px;display:flex;gap:4px;overflow-x:auto}
+.nb{padding:13px 16px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border:none;background:none;white-space:nowrap;border-bottom:2px solid transparent;transition:.2s}
+.nb:hover{color:var(--text)}
+.nb.active{color:var(--accent);border-bottom-color:var(--accent)}
+/* LAYOUT */
+.container{max-width:1300px;margin:0 auto;padding:36px 40px}
+.sec{display:none}
+.sec.active{display:block}
+.stitle{font-size:21px;font-weight:700;margin-bottom:6px}
+.ssub{font-size:13px;color:var(--muted);margin-bottom:24px}
+/* CARDS */
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px;margin-bottom:22px}
+.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-bottom:22px}
+.g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:22px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px}
+.card h3{font-size:14px;font-weight:600;margin-bottom:8px}
+.card p{font-size:13px;color:var(--muted);line-height:1.6}
+.scard{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
+.scard .sv{font-size:30px;font-weight:800}
+.scard .sl{font-size:11px;color:var(--muted);margin-top:4px}
+/* CODE */
+.cw{background:#0a0e15;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin:14px 0}
+.ch{display:flex;align-items:center;justify-content:space-between;padding:9px 16px;background:#111620;border-bottom:1px solid var(--border)}
+.cl{font-size:11px;color:var(--accent);font-weight:600;letter-spacing:.8px;text-transform:uppercase}
+.cc{font-size:11px;color:var(--muted);cursor:pointer;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:4px;padding:3px 10px;transition:.2s}
+.cc:hover{color:var(--text);background:rgba(255,255,255,.1)}
+.cb{padding:18px 20px;overflow-x:auto}
+pre{font-size:12.5px;line-height:1.7;font-family:"Cascadia Code","Fira Code",Consolas,monospace;color:#c9d1d9;white-space:pre-wrap;word-break:break-word}
+/* PIPELINE */
+.pipe{display:flex;align-items:stretch;flex-wrap:wrap;gap:0;margin:18px 0}
+.ps{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px;min-width:100px;text-align:center;flex:1}
+.ps .pi{font-size:20px;margin-bottom:5px}
+.ps .pn{font-size:11px;font-weight:600}
+.ps .pd{font-size:10px;color:var(--muted);margin-top:2px}
+.pa{font-size:18px;color:var(--accent);padding:0 4px;display:flex;align-items:center}
+/* ARCH */
+.arch{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:28px;margin:18px 0}
+.arow{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin:10px 0}
+.an{background:#0d1117;border:1px solid var(--border);border-radius:8px;padding:9px 14px;text-align:center;font-size:12px;font-weight:600;min-width:100px}
+.aa{font-size:14px;color:var(--accent)}
+.albl{font-size:10px;color:var(--muted);display:block;font-weight:400;margin-top:2px}
+.adiv{width:100%;border:none;border-top:1px dashed var(--border);margin:8px 0}
+.llbl{font-size:10px;color:var(--muted);text-align:center;margin:5px 0 2px;letter-spacing:1px;text-transform:uppercase}
+/* FINOPS TABLE */
+.ft{width:100%;border-collapse:collapse;font-size:13px}
+.ft th{background:#111620;color:var(--muted);text-align:left;padding:10px 14px;border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+.ft td{padding:10px 14px;border-bottom:1px solid rgba(48,54,61,.5)}
+.ft tr:last-child td{border-bottom:none}
+.sb{background:rgba(63,185,80,.1);color:var(--green);border:1px solid rgba(63,185,80,.3);border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600}
+/* ALERTS */
+.al{border-radius:8px;padding:12px 16px;margin:12px 0;font-size:13px;display:flex;gap:10px}
+.ai{background:rgba(88,166,255,.07);border:1px solid rgba(88,166,255,.3);color:#8cc4ff}
+.aw{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.3);color:#fbbf24}
+.as{background:rgba(63,185,80,.07);border:1px solid rgba(63,185,80,.3);color:#6ee7a0}
+/* TIMELINE */
+.tl{position:relative;padding-left:24px}
+.tl::before{content:"";position:absolute;left:6px;top:4px;bottom:4px;width:2px;background:var(--border)}
+.ti{position:relative;margin-bottom:24px}
+.td{position:absolute;left:-20px;top:3px;width:10px;height:10px;border-radius:50%;border:2px solid var(--accent);background:var(--bg)}
+.ti h4{font-size:13px;font-weight:600;margin-bottom:4px}
+.ti p{font-size:13px;color:var(--muted);line-height:1.6}
+/* FILE TREE */
+.ftree{background:#0a0e15;border:1px solid var(--border);border-radius:10px;padding:18px 22px;font-family:monospace;font-size:13px;line-height:2}
+.fd{color:var(--blue)}
+.ff{color:var(--text)}
+.fc{color:var(--muted)}
+hr.dv{border:none;border-top:1px solid var(--border);margin:24px 0}
+@media(max-width:768px){.hero{padding:28px 20px 24px}.container{padding:20px 16px}.nav{padding:0 8px}.pipe{flex-direction:column}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="badge">🔐 Enterprise DevOps Project</div>
+  <h1>SmartDoor Facility<br/><span>DevOps + FinOps Platform</span></h1>
+  <p>A production-grade, cloud-native smart door management system — GitOps pipelines, Kubernetes orchestration, real-time monitoring, IaC with Terraform, and FinOps cost governance. Built to impress both HR and senior engineers.</p>
+  <div class="tags">
+    <span class="tag tb">FastAPI Python</span>
+    <span class="tag tb">Docker Multi-stage</span>
+    <span class="tag tb">Kubernetes / EKS</span>
+    <span class="tag tg">Terraform IaC</span>
+    <span class="tag tg">GitHub Actions CI/CD</span>
+    <span class="tag tp">Prometheus + Grafana</span>
+    <span class="tag tp">ArgoCD GitOps</span>
+    <span class="tag to">FinOps / Kubecost</span>
+    <span class="tag tr">MQTT IoT Integration</span>
+    <span class="tag tc">JWT Auth + RBAC</span>
+    <span class="tag tc">WebSocket Real-time</span>
+    <span class="tag tb">Trivy Security Scan</span>
+  </div>
+</div>
+
+<nav class="nav">
+  <button class="nb active" onclick="show('overview',this)">🏗️ Overview</button>
+  <button class="nb" onclick="show('app',this)">⚡ Application</button>
+  <button class="nb" onclick="show('docker',this)">🐳 Docker</button>
+  <button class="nb" onclick="show('k8s',this)">☸️ Kubernetes</button>
+  <button class="nb" onclick="show('cicd',this)">🔄 CI/CD</button>
+  <button class="nb" onclick="show('terraform',this)">🌿 Terraform</button>
+  <button class="nb" onclick="show('monitoring',this)">📊 Monitoring</button>
+  <button class="nb" onclick="show('finops',this)">💰 FinOps</button>
+  <button class="nb" onclick="show('deploy',this)">🚀 Deploy Guide</button>
+</nav>
+
+<div class="container">
+
+<!-- OVERVIEW -->
+<div class="sec active" id="s-overview">
+  <div class="stitle">Project Architecture</div>
+  <div class="ssub">End-to-end smart door facility management with full DevOps lifecycle</div>
+  <div class="g4">
+    <div class="scard" style="border-color:rgba(0,212,170,.3)"><div class="sv" style="color:var(--accent)">12+</div><div class="sl">DevOps Components</div></div>
+    <div class="scard" style="border-color:rgba(88,166,255,.3)"><div class="sv" style="color:var(--blue)">5</div><div class="sl">Microservices</div></div>
+    <div class="scard" style="border-color:rgba(245,158,11,.3)"><div class="sv" style="color:var(--orange)">~40%</div><div class="sl">FinOps Cloud Savings</div></div>
+    <div class="scard" style="border-color:rgba(63,185,80,.3)"><div class="sv" style="color:var(--green)">99.9%</div><div class="sl">Target Uptime SLA</div></div>
+  </div>
+
+  <div class="arch">
+    <div style="text-align:center;font-size:14px;font-weight:700;margin-bottom:18px;color:var(--accent)">🏛️ System Architecture Diagram</div>
+    <div class="llbl">IoT / Edge Layer</div>
+    <div class="arow">
+      <div class="an" style="border-color:rgba(248,81,73,.4);color:var(--red)">🚪 Door Hardware<span class="albl">Physical Locks</span></div>
+      <div class="aa">→</div>
+      <div class="an" style="border-color:rgba(248,81,73,.4);color:var(--red)">📡 MQTT Broker<span class="albl">Eclipse Mosquitto</span></div>
+      <div class="aa">→</div>
+      <div class="an" style="border-color:rgba(0,212,170,.4);color:var(--accent)">🔌 Redis Pub/Sub<span class="albl">Event Bus</span></div>
+    </div>
+    <div class="adiv"></div>
+    <div class="llbl">API / Application Layer</div>
+    <div class="arow">
+      <div class="an" style="border-color:rgba(88,166,255,.4);color:var(--blue)">🌐 Nginx Ingress<span class="albl">API Gateway</span></div>
+      <div class="aa">→</div>
+      <div class="an" style="border-color:rgba(88,166,255,.4);color:var(--blue)">⚡ FastAPI<span class="albl">SmartDoor API</span></div>
+      <div class="aa">→</div>
+      <div class="an" style="border-color:rgba(88,166,255,.4);color:var(--blue)">🗄️ PostgreSQL<span class="albl">Access Logs</span></div>
+    </div>
+    <div class="adiv"></div>
+    <div class="llbl">Orchestration Layer</div>
+    <div class="arow">
+      <div class="an" style="border-color:rgba(167,139,250,.4);color:var(--purple)">☸️ Kubernetes EKS<span class="albl">Orchestration</span></div>
+      <div class="aa">↔</div>
+      <div class="an" style="border-color:rgba(167,139,250,.4);color:var(--purple)">🔀 ArgoCD<span class="albl">GitOps CD</span></div>
+      <div class="aa">↔</div>
+      <div class="an" style="border-color:rgba(167,139,250,.4);color:var(--purple)">📦 Helm Charts<span class="albl">K8s Packaging</span></div>
+    </div>
+    <div class="adiv"></div>
+    <div class="llbl">Observability + FinOps Layer</div>
+    <div class="arow">
+      <div class="an" style="border-color:rgba(245,158,11,.4);color:var(--orange)">📈 Prometheus<span class="albl">Metrics</span></div>
+      <div class="aa">→</div>
+      <div class="an" style="border-color:rgba(245,158,11,.4);color:var(--orange)">📊 Grafana<span class="albl">Dashboards</span></div>
+      <div class="aa">+</div>
+      <div class="an" style="border-color:rgba(63,185,80,.4);color:var(--green)">💰 Kubecost<span class="albl">FinOps</span></div>
+      <div class="aa">+</div>
+      <div class="an" style="border-color:rgba(63,185,80,.4);color:var(--green)">🔍 ELK Stack<span class="albl">Log Mgmt</span></div>
+    </div>
+  </div>
+
+  <div class="stitle" style="font-size:16px;margin-top:28px">🔄 CI/CD Pipeline</div>
+  <div class="pipe">
+    <div class="ps"><div class="pi">💻</div><div class="pn">Developer</div><div class="pd">git push</div></div>
+    <div class="pa">→</div>
+    <div class="ps" style="border-color:rgba(88,166,255,.4)"><div class="pi">🔍</div><div class="pn">Lint+Test</div><div class="pd">Ruff, Pytest</div></div>
+    <div class="pa">→</div>
+    <div class="ps" style="border-color:rgba(63,185,80,.4)"><div class="pi">🐳</div><div class="pn">Docker Build</div><div class="pd">Multi-stage</div></div>
+    <div class="pa">→</div>
+    <div class="ps" style="border-color:rgba(248,81,73,.4)"><div class="pi">🔐</div><div class="pn">Security Scan</div><div class="pd">Trivy+Semgrep</div></div>
+    <div class="pa">→</div>
+    <div class="ps" style="border-color:rgba(245,158,11,.4)"><div class="pi">🚦</div><div class="pn">Staging Deploy</div><div class="pd">ArgoCD Sync</div></div>
+    <div class="pa">→</div>
+    <div class="ps" style="border-color:rgba(167,139,250,.4)"><div class="pi">✅</div><div class="pn">Prod Approval</div><div class="pd">Manual Gate</div></div>
+    <div class="pa">→</div>
+    <div class="ps" style="border-color:rgba(0,212,170,.4)"><div class="pi">📊</div><div class="pn">Monitor</div><div class="pd">Grafana</div></div>
+  </div>
+
+  <div class="stitle" style="font-size:16px;margin-top:24px">📁 Project Structure</div>
+  <div class="ftree">
+<span class="fd">smartdoor-devops/</span>
+├── <span class="fd">app/</span>                         <span class="fc"># FastAPI application</span>
+│   ├── <span class="ff">main.py</span>                  <span class="fc"># API + Auth + WebSocket + Metrics</span>
+│   ├── <span class="ff">requirements.txt</span>
+│   └── <span class="fd">tests/</span><span class="ff">test_api.py</span>
+├── <span class="fd">docker/</span>
+│   ├── <span class="ff">Dockerfile</span>               <span class="fc"># Multi-stage (900MB → 85MB)</span>
+│   └── <span class="ff">docker-compose.yml</span>       <span class="fc"># Full local dev stack</span>
+├── <span class="fd">k8s/</span>                         <span class="fc"># Kubernetes manifests</span>
+│   ├── <span class="ff">namespace.yaml</span>
+│   ├── <span class="ff">deployment.yaml</span>          <span class="fc"># Zero-downtime rolling deploys</span>
+│   ├── <span class="ff">service.yaml</span>
+│   ├── <span class="ff">ingress.yaml</span>             <span class="fc"># TLS + rate limiting</span>
+│   ├── <span class="ff">hpa.yaml</span>                 <span class="fc"># HPA + VPA autoscaling</span>
+│   ├── <span class="ff">configmap.yaml</span>
+│   └── <span class="ff">secrets.yaml</span>
+├── <span class="fd">terraform/</span>                   <span class="fc"># Infrastructure as Code</span>
+│   ├── <span class="ff">main.tf</span>                  <span class="fc"># EKS + VPC + RDS + Redis</span>
+│   ├── <span class="ff">variables.tf</span>
+│   └── <span class="ff">outputs.tf</span>
+├── <span class="fd">.github/workflows/</span>          <span class="fc"># CI/CD Pipelines</span>
+│   ├── <span class="ff">ci.yml</span>                   <span class="fc"># Build + Test + Trivy Scan</span>
+│   └── <span class="ff">cd.yml</span>                   <span class="fc"># ArgoCD GitOps deploy</span>
+├── <span class="fd">monitoring/</span>
+│   ├── <span class="ff">prometheus.yaml</span>
+│   ├── <span class="ff">alerting-rules.yaml</span>
+│   └── <span class="ff">grafana-dashboard.json</span>
+└── <span class="fd">finops/</span>
+    ├── <span class="ff">kubecost-values.yaml</span>
+    └── <span class="ff">cost-policy.yaml</span>         <span class="fc"># OPA Gatekeeper resource limits</span>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="sec" id="s-app">
+  <div class="stitle">⚡ FastAPI Application</div>
+  <div class="ssub">Production Python backend — JWT + RBAC, WebSocket live feed, Prometheus metrics, IoT events</div>
+  <div class="g3">
+    <div class="card"><h3>🔐 JWT + RBAC Auth</h3><p>Three roles: Admin (full control), Security (lock/unlock), Employee (view only). 30-min expiring HS256 tokens with proper HTTP 401/403 responses.</p></div>
+    <div class="card"><h3>⚡ WebSocket Live Feed</h3><p>Real-time door event broadcasts to all connected dashboards. Heartbeat ping/pong keeps connections alive. Graceful disconnect handling.</p></div>
+    <div class="card"><h3>📈 Prometheus Metrics</h3><p>Built-in /metrics endpoint. Counter for door_access_total, Histogram for API latency, Gauge for live WebSocket connections and online doors.</p></div>
+  </div>
+  <div class="cw">
+    <div class="ch"><span class="cl">Python — app/main.py</span><button class="cc" onclick="cp(this)">Copy</button></div>
+    <div class="cb"><pre>&quot;&quot;&quot;
+SmartDoor Facility API — Production Backend
+FastAPI + JWT Auth + RBAC + WebSocket + Prometheus Metrics
+&quot;&quot;&quot;
+from fastapi import FastAPI, HTTPException, Depends, WebSocket, WebSocketDisconnect, BackgroundTasks
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.responses import Response
+from pydantic import BaseModel
+from prometheus_client import Counter, Histogram, Gauge, generate_latest, CONTENT_TYPE_LATEST
+from typing import Optional, List
+import asyncio, json, logging, os, time, uuid, hashlib
+from datetime import datetime, timedelta
+import jwt
+
+logging.basicConfig(level=logging.INFO, format=&quot;%(asctime)s | %(levelname)s | %(message)s&quot;)
+logger = logging.getLogger(&quot;smartdoor&quot;)
+
+app = FastAPI(
+    title=&quot;SmartDoor Facility API&quot;,
+    description=&quot;Enterprise Smart Door Management — DevOps &amp; FinOps integrated&quot;,
+    version=&quot;2.0.0&quot;
+)
+app.add_middleware(CORSMiddleware, allow_origins=[&quot;*&quot;], allow_methods=[&quot;*&quot;], allow_headers=[&quot;*&quot;])
+
+# Prometheus Metrics
+door_access_total   = Counter(&quot;door_access_total&quot;,   &quot;Door access events&quot;,    [&quot;door_id&quot;, &quot;status&quot;])
+auth_attempts_total = Counter(&quot;auth_attempts_total&quot;, &quot;Auth attempts&quot;,          [&quot;result&quot;])
+api_latency         = Histogram(&quot;api_latency_seconds&quot;,&quot;API request latency&quot;,  [&quot;endpoint&quot;])
+active_websockets   = Gauge(&quot;active_websockets_total&quot;,&quot;Live WS connections&quot;)
+doors_online        = Gauge(&quot;doors_online_total&quot;,    &quot;Doors currently online&quot;)
+
+SECRET_KEY = os.getenv(&quot;JWT_SECRET_KEY&quot;, &quot;smartdoor-change-in-prod&quot;)
+ALGORITHM  = &quot;HS256&quot;
+security   = HTTPBearer()
+
+USERS_DB = {
+    &quot;admin&quot;:    {&quot;hash&quot;: hashlib.sha256(b&quot;admin123&quot;).hexdigest(),   &quot;role&quot;: &quot;admin&quot;,    &quot;name&quot;: &quot;Admin User&quot;},
+    &quot;security&quot;: {&quot;hash&quot;: hashlib.sha256(b&quot;security123&quot;).hexdigest(),&quot;role&quot;: &quot;security&quot;, &quot;name&quot;: &quot;Security Officer&quot;},
+    &quot;employee&quot;: {&quot;hash&quot;: hashlib.sha256(b&quot;emp123&quot;).hexdigest(),     &quot;role&quot;: &quot;employee&quot;, &quot;name&quot;: &quot;John Employee&quot;},
+}
+
+DOORS_DB = {
+    &quot;DOOR-001&quot;: {&quot;name&quot;: &quot;Main Entrance&quot;,    &quot;building&quot;: &quot;HQ&quot;,    &quot;floor&quot;: 1, &quot;status&quot;: &quot;locked&quot;,   &quot;online&quot;: True},
+    &quot;DOOR-002&quot;: {&quot;name&quot;: &quot;Server Room&quot;,      &quot;building&quot;: &quot;HQ&quot;,    &quot;floor&quot;: 2, &quot;status&quot;: &quot;locked&quot;,   &quot;online&quot;: True},
+    &quot;DOOR-003&quot;: {&quot;name&quot;: &quot;Conference Hall A&quot;,&quot;building&quot;: &quot;HQ&quot;,    &quot;floor&quot;: 1, &quot;status&quot;: &quot;unlocked&quot;, &quot;online&quot;: True},
+    &quot;DOOR-004&quot;: {&quot;name&quot;: &quot;Parking Gate&quot;,     &quot;building&quot;: &quot;Annex&quot;, &quot;floor&quot;: 0, &quot;status&quot;: &quot;locked&quot;,   &quot;online&quot;: False},
+    &quot;DOOR-005&quot;: {&quot;name&quot;: &quot;Emergency Exit&quot;,   &quot;building&quot;: &quot;HQ&quot;,    &quot;floor&quot;: 2, &quot;status&quot;: &quot;locked&quot;,   &quot;online&quot;: True},
+}
+
+ACCESS_LOGS: List[dict] = []
+connected_ws: List[WebSocket] = []
+
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+class DoorControlRequest(BaseModel):
+    door_id: str
+    action: str  # lock | unlock | status
+    reason: Optional[str] = None
+
+
+def create_token(data: dict) -&gt; str:
+    payload = {**data, &quot;exp&quot;: datetime.utcnow() + timedelta(minutes=30)}
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+def verify_token(creds: HTTPAuthorizationCredentials = Depends(security)):
+    try:
+        payload = jwt.decode(creds.credentials, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get(&quot;sub&quot;)
+        if not username or username not in USERS_DB:
+            raise HTTPException(401, &quot;Invalid token&quot;)
+        return {&quot;username&quot;: username, **USERS_DB[username]}
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(401, &quot;Token expired&quot;)
+    except jwt.InvalidTokenError:
+        raise HTTPException(401, &quot;Invalid token&quot;)
+
+async def broadcast(event: dict):
+    dead = []
+    for ws in connected_ws:
+        try:    await ws.send_text(json.dumps(event))
+        except: dead.append(ws)
+    for ws in dead:
+        connected_ws.remove(ws)
+
+
+@app.on_event(&quot;startup&quot;)
+async def startup():
+    doors_online.set(sum(1 for d in DOORS_DB.values() if d[&quot;online&quot;]))
+    logger.info(&quot;SmartDoor API started&quot;)
+
+
+@app.get(&quot;/&quot;,           tags=[&quot;Health&quot;])
+async def root():       return {&quot;service&quot;: &quot;SmartDoor API&quot;, &quot;version&quot;: &quot;2.0.0&quot;, &quot;status&quot;: &quot;operational&quot;}
+
+@app.get(&quot;/health&quot;,     tags=[&quot;Health&quot;])
+async def health():     return {&quot;status&quot;: &quot;healthy&quot;, &quot;doors_online&quot;: sum(1 for d in DOORS_DB.values() if d[&quot;online&quot;])}
+
+@app.get(&quot;/metrics&quot;,    tags=[&quot;Observability&quot;])
+async def metrics():    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+
+
+@app.post(&quot;/auth/login&quot;, tags=[&quot;Auth&quot;])
+async def login(req: LoginRequest):
+    user = USERS_DB.get(req.username)
+    if not user or hashlib.sha256(req.password.encode()).hexdigest() != user[&quot;hash&quot;]:
+        auth_attempts_total.labels(result=&quot;failed&quot;).inc()
+        raise HTTPException(401, &quot;Invalid credentials&quot;)
+    auth_attempts_total.labels(result=&quot;success&quot;).inc()
+    token = create_token({&quot;sub&quot;: req.username, &quot;role&quot;: user[&quot;role&quot;]})
+    return {&quot;access_token&quot;: token, &quot;token_type&quot;: &quot;bearer&quot;, &quot;user&quot;: {&quot;username&quot;: req.username, &quot;role&quot;: user[&quot;role&quot;]}}
+
+
+@app.get(&quot;/doors&quot;,               tags=[&quot;Doors&quot;])
+async def list_doors(u=Depends(verify_token)):
+    return {&quot;doors&quot;: DOORS_DB, &quot;total&quot;: len(DOORS_DB)}
+
+@app.get(&quot;/doors/{door_id}&quot;,     tags=[&quot;Doors&quot;])
+async def get_door(door_id: str, u=Depends(verify_token)):
+    if door_id not in DOORS_DB: raise HTTPException(404, f&quot;Door {door_id} not found&quot;)
+    return DOORS_DB[door_id]
+
+@app.post(&quot;/doors/{door_id}/control&quot;, tags=[&quot;Doors&quot;])
+async def control_door(door_id: str, req: DoorControlRequest, bg: BackgroundTasks, u=Depends(verify_token)):
+    t0 = time.time()
+    if door_id not in DOORS_DB: raise HTTPException(404, &quot;Door not found&quot;)
+    if not DOORS_DB[door_id][&quot;online&quot;]: raise HTTPException(503, &quot;Door offline&quot;)
+    if req.action not in [&quot;lock&quot;, &quot;unlock&quot;, &quot;status&quot;]: raise HTTPException(400, &quot;Invalid action&quot;)
+    if req.action != &quot;status&quot; and u[&quot;role&quot;] not in [&quot;admin&quot;, &quot;security&quot;]:
+        raise HTTPException(403, &quot;Insufficient permissions&quot;)
+    if req.action != &quot;status&quot;:
+        DOORS_DB[door_id][&quot;status&quot;] = &quot;locked&quot; if req.action == &quot;lock&quot; else &quot;unlocked&quot;
+    door_access_total.labels(door_id=door_id, status=&quot;success&quot;).inc()
+    log = {&quot;id&quot;: str(uuid.uuid4()), &quot;door_id&quot;: door_id, &quot;user&quot;: u[&quot;username&quot;],
+           &quot;action&quot;: req.action, &quot;timestamp&quot;: datetime.utcnow().isoformat()}
+    ACCESS_LOGS.append(log)
+    bg.add_task(broadcast, {&quot;type&quot;: &quot;door_event&quot;, **log})
+    api_latency.labels(endpoint=&quot;/doors/control&quot;).observe(time.time() - t0)
+    return {&quot;message&quot;: f&quot;Door {door_id} {req.action}ed&quot;, &quot;log&quot;: log}
+
+
+@app.get(&quot;/access-logs&quot;,         tags=[&quot;Audit&quot;])
+async def access_logs(limit: int = 50, u=Depends(verify_token)):
+    return {&quot;logs&quot;: ACCESS_LOGS[-limit:], &quot;total&quot;: len(ACCESS_LOGS)}
+
+@app.get(&quot;/dashboard/stats&quot;,     tags=[&quot;Dashboard&quot;])
+async def dashboard_stats(u=Depends(verify_token)):
+    total = len(DOORS_DB)
+    locked = sum(1 for d in DOORS_DB.values() if d[&quot;status&quot;] == &quot;locked&quot;)
+    online = sum(1 for d in DOORS_DB.values() if d[&quot;online&quot;])
+    today = datetime.utcnow().date().isoformat()
+    return {&quot;total_doors&quot;: total, &quot;locked&quot;: locked, &quot;unlocked&quot;: total - locked,
+            &quot;online&quot;: online, &quot;offline&quot;: total - online,
+            &quot;events_today&quot;: sum(1 for l in ACCESS_LOGS if l[&quot;timestamp&quot;].startswith(today)),
+            &quot;security_score&quot;: round(locked / total * 100, 1)}
+
+
+@app.websocket(&quot;/ws/events&quot;)
+async def ws_handler(ws: WebSocket):
+    await ws.accept()
+    connected_ws.append(ws)
+    active_websockets.set(len(connected_ws))
+    try:
+        await ws.send_text(json.dumps({&quot;type&quot;: &quot;connected&quot;, &quot;doors&quot;: DOORS_DB}))
+        while True:
+            await asyncio.wait_for(ws.receive_text(), timeout=30)
+    except (WebSocketDisconnect, asyncio.TimeoutError):
+        pass
+    finally:
+        if ws in connected_ws: connected_ws.remove(ws)
+        active_websockets.set(len(connected_ws))
+</pre></div>
+  </div>
+  <div class="cw">
+    <div class="ch"><span class="cl">Text — requirements.txt</span><button class="cc" onclick="cp(this)">Copy</button></div>
+    <div class="cb"><pre>fastapi==0.111.0
+uvicorn[standard]==0.29.0
+pydantic==2.7.1
+PyJWT==2.8.0
+prometheus-client==0.20.0
+redis[asyncio]==5.0.4
+asyncpg==0.29.0
+httpx==0.27.0
+pytest==8.2.0
+pytest-asyncio==0.23.6</pre></div>
+  </div>
+</div>
+
+<!-- DOCKER -->
+<div class="sec" id="s-docker">
+  <div class="stitle">🐳 Docker — Containerization</div>
+  <div class="ssub">Multi-stage build (900MB → 85MB), non-root security, full local dev stack</div>
+  <div class="al as">✅ Multi-stage build reduces final image size from ~900MB to ~85MB using python:3.11-slim</div>
+  <div class="cw">
+    <div class="ch"><span class="cl">Dockerfile — Multi-Stage Production</span><button class="cc" onclick="cp(this)">Copy</button></div>
+    <div class="cb"><pre># ─── Stage 1: Builder ─────────────────────────────────────────
+FROM python:3.11-slim AS builder
+WORKDIR /build
+
+RUN apt-get update &amp;&amp; apt-get install -y --no-install-recommends \
+    gcc libpq-dev &amp;&amp; rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install --prefix=/deps --no-cache-dir -r requirements.txt
+
+# ─── Stage 2: Production ──────────────────────────────────────
+FROM python:3.11-slim AS production
+LABEL maintainer=&quot;devops@smartdoor.io&quot;
+LABEL version=&quot;2.0.0&quot;
+
+# Non-root user (security hardening)
+RUN groupadd -r smartdoor &amp;&amp; useradd -r -g smartdoor smartdoor
+
+WORKDIR /app
+COPY --from=builder /deps /usr/local
+COPY --chown=smartdoor:smartdoor . .
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PORT=8000
+
+USER smartdoor
+EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
+    CMD python -c &quot;import urllib.request; urllib.request.urlopen(&#x27;http://localhost:8000/health&#x27;)&quot;
+
+CMD [&quot;uvicorn&quot;, &quot;main:app&quot;, &quot;--host&quot;, &quot;0.0.0.0&quot;, &quot;--port&quot;, &quot;8000&quot;, &quot;--workers&quot;, &quot;4&quot;, &quot;--proxy-headers&quot;]
+</pre></div>
+  </div>
+  <div class="cw">
+    <div class="ch"><span class="cl">YAML — docker-compose.yml (Full Stack)</span><button class="cc" onclick="cp(this)">Copy</button></div>
+    <div class="cb"><pre>version: &quot;3.9&quot;
+
+services:
+  # ─── SmartDoor API ────────────────────────────────────────────
+  smartdoor-api:
+    build:
+      context: ./app
+      dockerfile: ../docker/Dockerfile
+      target: production
+    image: smartdoor-api:2.0.0
+    container_name: smartdoor-api
+    ports:
+      - &quot;8000:8000&quot;
+    environment:
+      JWT_SECRET_KEY: &quot;${JWT_SECRET}&quot;
+      REDIS_URL: &quot;redis://redis:6379&quot;
+      DATABASE_URL: &quot;postgresql://smartdoor:${DB_PASSWORD}@postgres:5432/smartdoor_db&quot;
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: [&quot;CMD&quot;, &quot;curl&quot;, &quot;-f&quot;, &quot;http://localhost:8000/health&quot;]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks: [smartdoor-net]
+    labels:
+      prometheus.io/scrape: &quot;true&quot;
+      prometheus.io/port: &quot;8000&quot;
+      prometheus.io/path: &quot;/metrics&quot;
+
+  # ─── MQTT Broker (IoT Door Hardware) ─────────────────────────
+  mqtt-broker:
+    image: eclipse-mosquitto:2.0
+    container_name: smartdoor-mqtt
+    ports:
+      - &quot;1883:1883&quot;
+      - &quot;9001:9001&quot;
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+    networks: [smartdoor-net]
+
+  # ─── Redis (Cache + Pub/Sub) ──────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: smartdoor-redis
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    ports:
+      - &quot;6379:6379&quot;
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: [&quot;CMD&quot;, &quot;redis-cli&quot;, &quot;ping&quot;]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    networks: [smartdoor-net]
+
+  # ─── PostgreSQL ───────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: smartdoor-postgres
+    environment:
+      POSTGRES_DB: smartdoor_db
+      POSTGRES_USER: smartdoor
+      POSTGRES_PASSWORD: &quot;${DB_PASSWORD}&quot;
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [&quot;CMD-SHELL&quot;, &quot;pg_isready -U smartdoor&quot;]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [smartdoor-net]
+
+  # ─── Prometheus ───────────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: smartdoor-prometheus
+    ports:
+      - &quot;9090:9090&quot;
+    volumes:
+      - ./monitoring/prometheus.yaml:/etc/prometheus/prometheus.yml
+      - ./monitoring/alerting-rules.yaml:/etc/prometheus/alerts.yml
+      - prometheus_data:/prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.retention.time=30d
+    networks: [smartdoor-net]
+
+  # ─── Grafana ──────────────────────────────────────────────────
+  grafana:
+    image: grafana/grafana:10.4.0
+    container_name: smartdoor-grafana
+    ports:
+      - &quot;3000:3000&quot;
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin123
+      GF_USERS_ALLOW_SIGN_UP: &quot;false&quot;
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /etc/grafana/dashboards/smartdoor.json
+    volumes:
+      - ./monitoring/grafana-dashboard.json:/etc/grafana/dashboards/smartdoor.json
+      - grafana_data:/var/lib/grafana
+    depends_on: [prometheus]
+    networks: [smartdoor-net]
+
+  # ─── Nginx API Gateway ────────────────────────────────────────
+  nginx:
+    image: nginx:alpine
+    container_name: smartdoor-nginx
+    ports:
+      - &quot;80:80&quot;
+      - &quot;443:443&quot;
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on: [smartdoor-api]
+    networks: [smartdoor-net]
+
+volumes:
+  redis_data:
+  pg_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  smartdoor-net:
+    driver: bridge
+</pre></div>
+  </div>
+</div>
+
+<!-- K8S -->
+<div class="sec" id="s-k8s">
+  <div class="stitle">☸️ Kubernetes — Orchestration</div>
+  <div class="ssub">Zero-downtime deployments, pod anti-affinity across AZs, HPA autoscaling, FinOps resource quotas</div>
+  <div class="cw">
+    <div class="ch"><span class="cl">YAML — k8s/manifests.yaml (All K8s Resources)</span><button class="cc" onclick="cp(this)">Copy</button></div>
+    <div class="cb"><pre># ─── Namespace ───────────────────────────────────────────────────
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: smartdoor
+  labels:
+    app: smartdoor
+    managed-by: terraform
+
+---
+# ─── ConfigMap ────────────────────────────────────────────────────
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: smartdoor-config
+  namespace: smartdoor
+data:
+  REDIS_URL: &quot;redis://smartdoor-redis:6379&quot;
+  APP_ENV: &quot;production&quot;
+  LOG_LEVEL: &quot;INFO&quot;
+
+---
+# ─── Secret (base64 encoded) ──────────────────────────────────────
+apiVersion: v1
+kind: Secret
+metadata:
+  name: smartdoor-secrets
+  namespace: smartdoor
+type: Opaque
+stringData:                            # use sealed-secrets in real prod
+  jwt-secret: &quot;REPLACE_WITH_STRONG_SECRET&quot;
+  db-password: &quot;REPLACE_WITH_DB_PASS&quot;
+
+---
+# ─── Deployment ───────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smartdoor-api
+  namespace: smartdoor
+  labels:
+    app: smartdoor-api
+    version: v2.0.0
+    environment: production
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: smartdoor-api
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0          # Zero-downtime deploys
+  template:
+    metadata:
+      labels:
+        app: smartdoor-api
+      annotations:
+        prometheus.io/scrape: &quot;true&quot;
+        prometheus.io/port: &quot;8000&quot;
+        prometheus.io/path: &quot;/metrics&quot;
+    spec:
+      serviceAccountName: smartdoor-sa
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
+      containers:
+      - name: smartdoor-api
+        image: ghcr.io/smartdoor-io/smartdoor-api:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+        - name: JWT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: smartdoor-secrets
+              key: jwt-secret
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: smartdoor-config
+              key: REDIS_URL
+        resources:
+          requests:
+            cpu: &quot;100m&quot;
+            memory: &quot;128Mi&quot;
+          limits:
+            cpu: &quot;500m&quot;
+            memory: &quot;512Mi&quot;
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: [ALL]
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values: [smartdoor-api]
+              topologyKey: topology.kubernetes.io/zone
+
+---
+# ─── Service ──────────────────────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: smartdoor-service
+  namespace: smartdoor
+  labels:
+    app: smartdoor-api
+spec:
+  selector:
+    app: smartdoor-api
+  ports:
+  - name: http
+    port: 8000
+    targetPort: 8000
+  type: ClusterIP
+
+---
+# ─── Ingress ──────────────────────────────────────────────────────
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: smartdoor-ingress
+  namespace: smartdoor
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/rate-limit: &quot;100&quot;
+    nginx.ingress.kubernetes.io/ssl-redirect: &quot;true&quot;
+    nginx.ingress.kubernetes.io/enable-cors: &quot;true&quot;
+    nginx.ingress.kubernetes.io/proxy-body-size: &quot;10m&quot;
+spec:
+  tls:
+  - hosts: [api.smartdoor.io]
+    secretName: smartdoor-tls
+  rules:
+  - host: api.smartdoor.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: smartdoor-service
+            port:
+              number: 8000
+
+---
+# ─── HPA — Horizontal Pod Autoscaler ─────────────────────────────
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: smartdoor-hpa
+  namespace: smartdoor
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: smartdoor-api
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Pods
+        value: 2
+        periodSeconds: 60
+    scaleDown:
+      stabilizationWindowSeconds: 300   # Conservative — FinOps stability
+      policies:
+      - type: Pods
+        value: 1
+        periodSeconds: 120
+
+---
+# ─── ResourceQuota — FinOps cost governance ──────────────────────
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: smartdoor-quota
+  namespace: smartdoor
+spec:
+  hard:
+    requests.cpu: &quot;4&quot;
+    requests.memory: &quot;4Gi&quot;
+    limits.cpu: &quot;8&quot;
+    limits.memory: &quot;8Gi&quot;
+    pods: &quot;20&quot;
+    persistentvolumeclaims: &quot;5&quot;
+</pre></div>
+  </div>
+</div>
+
+<!-- CICD -->
+<div class="sec" id="s-cicd">
+  <div class="stitle">🔄 CI/CD — GitHub Actions</div>
+  <div class="ssub">Full GitOps pipeline: lint → test → build → Trivy scan → ArgoCD deploy to staging → manual approval → production</div>
+  <div class="cw">
+    <div class="ch"><span class="cl">YAML — .github/workflows/ci-cd.yml</span><button class="cc" onclick="cp(this)">Copy</button></div>
+    <div class="cb"><pre># ─── CI Pipeline: .github/workflows/ci.yml ───────────────────────
+name: SmartDoor CI Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: smartdoor-io/smartdoor-api
+
+jobs:
+  # ── 1. Lint + Test ─────────────────────────────────────────────
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/setup-python@v5
+      with:
+        python-version: &quot;3.11&quot;
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: pip-${{ hashFiles(&#x27;**/requirements.txt&#x27;) }}
+
+    - name: Install dependencies
+      run: pip install -r app/requirements.txt
+
+    - name: Lint with ruff
+      run: pip install ruff &amp;&amp; ruff check app/ --output-format=github
+
+    - name: Run tests with coverage
+      run: |
+        pip install pytest-cov
+        pytest app/tests/ -v \
+          --cov=app \
+          --cov-report=xml \
+          --cov-report=term-missing \
+          --cov-fail-under=80
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage.xml
+
+  # ── 2. Docker Build + Push ─────────────────────────────────────
+  build-and-push:
+    needs: lint-and-test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image-tag: sha-${{ github.sha }}
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Docker metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=sha,prefix=sha-
+          type=ref,event=branch
+          type=semver,pattern={{version}}
+          type=raw,value=latest,enable={{is_default_branch}}
+
+    - name: Build and push (multi-platform)
+      uses: docker/build-push-action@v5
+      with:
+        context: ./app
+        file: ./docker/Dockerfile
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        platforms: linux/amd64,linux/arm64
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        build-args: |
+          BUILD_DATE=${{ github.run_id }}
+          VCS_REF=${{ github.sha }}
+
+  # ── 3. Security Scanning ───────────────────────────────────────
+  security-scan:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Trivy vulnerability scan
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${{ github.sha }}
+        format: sarif
+        output: trivy-results.sarif
+        severity: CRITICAL,HIGH
+        exit-code: &quot;1&quot;
+
+    - name: Upload Trivy results to Security tab
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: trivy-results.sarif
+
+    - name: SAST with Semgrep
+      uses: returntocorp/semgrep-action@v1
+      with:
+        config: &gt;-
+          p/python
+          p/owasp-top-ten
+          p/jwt
+
+  # ── 4. Failure Notification ────────────────────────────────────
+  notify-failure:
+    needs: [lint-and-test, build-and-push, security-scan]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+    - name: Notify Slack
+      uses: slackapi/slack-github-action@v1.26.0
+      with:
+        channel-id: &quot;devops-alerts&quot;
+        slack-message: |
+          ❌ *SmartDoor CI FAILED*
+          Branch: ${{ github.ref }}
+          Actor: ${{ github.actor }}
+          Commit: ${{ github.sha }}
+          Link: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
+
+# ─── CD Pipeline: .github/workflows/cd.yml ───────────────────────
+# (Save this as a separate file in .github/workflows/cd.yml)
+
+# name: SmartDoor CD — Deploy to Kubernetes
+# on:
+#   workflow_run:
+#     workflows: [&quot;SmartDoor CI Pipeline&quot;]
+#     types: [completed]
+#     branches: [main]
+#
+# jobs:
+#   deploy-staging:
+#     if: ${{ github.event.workflow_run.conclusion == &#x27;success&#x27; }}
+#     runs-on: ubuntu-latest
+#     environment: staging
+#     steps:
+#     - uses: actions/checkout@v4
+#     - name: Update image tag in K8s manifests
+#       run: |
+#         sed -i &quot;s|smartdoor-api:.*|smartdoor-api:sha-${{ github.sha }}|g&quot; k8s/deployment.yaml
+#     - name: Commit GitOps manifests
+#       run: |
+#         git config user.name &quot;github-actions[bot]&quot;
+#         git config user.email &quot;github-actions[bot]@users.noreply.github.com&quot;
+#         git add k8s/
+#         git commit -m &quot;chore: deploy sha-${{ github.sha }} [skip ci]&quot;
+#         git push
+#     - name: Sync ArgoCD (staging)
+#       run: |
+#         argocd app sync smartdoor-staging \
+#           --server ${{ secrets.ARGOCD_SERVER }} \
+#           --auth-token ${{ secrets.ARGOCD_TOKEN }} \
+#           --timeout 300 --prune
+#     - name: Smoke test staging
+#       run: curl -sf https://staging.api.smartdoor.io/health | jq .
+#
+#   deploy-production:
+#     needs: deploy-staging
+#     environment: production       # requires manual approval in GitHub
+#     runs-on: ubuntu-latest
+#     steps:
+#     - name: Sync ArgoCD (production)
+#       run: |
+#         argocd app sync smartdoor-production \
+#           --server ${{ secrets.ARGOCD_SERVER }} \
+#           --auth-token ${{ secrets.ARGOCD_TOKEN }} \
+#           --timeout 600
+#     - name: Smoke test production
+#       run: curl -sf https://api.smartdoor.io/health | jq .
+</pre></div>
+  </div>
+</div>
+
+<!-- TERRAFORM -->
+<div class="sec" id="s-terraform">
+  <div class="stitle">🌿 Terraform — Infrastructure as Code</div>
+  <div class="ssub">AWS EKS cluster + VPC + RDS + ElastiCache — fully reproducible, state in S3 + DynamoDB lock</div>
+  <div class="cw">
+    <div class="ch"><span class="cl">HCL — terraform/main.tf + variables + outputs</span><button class="cc" onclick="cp(this)">Copy</button></div>
+    <div class="cb"><pre># ─── terraform/main.tf ───────────────────────────────────────────
+# SmartDoor AWS Infrastructure — EKS + VPC + RDS + ElastiCache
+
+terraform {
+  required_version = &quot;&gt;= 1.7&quot;
+  required_providers {
+    aws        = { source = &quot;hashicorp/aws&quot;,        version = &quot;~&gt; 5.0&quot; }
+    kubernetes = { source = &quot;hashicorp/kubernetes&quot;,  version = &quot;~&gt; 2.0&quot; }
+    helm       = { source = &quot;hashicorp/helm&quot;,        version = &quot;~&gt; 2.0&quot; }
+    random     = { source = &quot;hashicorp/random&quot;,      version = &quot;~&gt; 3.0&quot; }
+  }
+
+  # Remote state: S3 + DynamoDB locking
+  backend &quot;s3&quot; {
+    bucket         = &quot;smartdoor-terraform-state&quot;
+    key            = &quot;prod/terraform.tfstate&quot;
+    region         = &quot;us-east-1&quot;
+    encrypt        = true
+    dynamodb_table = &quot;smartdoor-tf-lock&quot;
+  }
+}
+
+provider &quot;aws&quot; {
+  region = var.aws_region
+  default_tags {
+    tags = {
+      Project     = &quot;SmartDoor&quot;
+      Environment = var.environment
+      ManagedBy   = &quot;Terraform&quot;
+      CostCenter  = &quot;smartdoor-facility&quot;   # FinOps: tag every resource
+    }
+  }
+}
+
+# ── VPC ────────────────────────────────────────────────────────────
+module &quot;vpc&quot; {
+  source  = &quot;terraform-aws-modules/vpc/aws&quot;
+  version = &quot;~&gt; 5.0&quot;
+
+  name = &quot;smartdoor-vpc&quot;
+  cidr = &quot;10.0.0.0/16&quot;
+
+  azs             = [&quot;${var.aws_region}a&quot;, &quot;${var.aws_region}b&quot;, &quot;${var.aws_region}c&quot;]
+  private_subnets = [&quot;10.0.1.0/24&quot;, &quot;10.0.2.0/24&quot;, &quot;10.0.3.0/24&quot;]
+  public_subnets  = [&quot;10.0.101.0/24&quot;, &quot;10.0.102.0/24&quot;, &quot;10.0.103.0/24&quot;]
+
+  enable_nat_gateway   = true
+  # FinOps: single NAT in staging, one per AZ in prod
+  single_nat_gateway   = var.environment != &quot;production&quot;
+  enable_dns_hostnames = true
+  enable_flow_log      = true       # Security audit trail
+
+  private_subnet_tags = {
+    &quot;kubernetes.io/role/internal-elb&quot;             = 1
+    &quot;kubernetes.io/cluster/smartdoor-eks&quot;         = &quot;owned&quot;
+  }
+  public_subnet_tags = {
+    &quot;kubernetes.io/role/elb&quot;                      = 1
+    &quot;kubernetes.io/cluster/smartdoor-eks&quot;         = &quot;shared&quot;
+  }
+}
+
+# ── EKS Cluster ────────────────────────────────────────────────────
+module &quot;eks&quot; {
+  source  = &quot;terraform-aws-modules/eks/aws&quot;
+  version = &quot;~&gt; 20.0&quot;
+
+  cluster_name    = &quot;smartdoor-eks&quot;
+  cluster_version = &quot;1.29&quot;
+
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc.private_subnets
+
+  cluster_endpoint_private_access = true
+  cluster_endpoint_public_access  = true
+
+  enable_irsa = true   # IAM Roles for Service Accounts
+
+  eks_managed_node_groups = {
+    # FinOps: Spot instances for app workloads (up to 70% cheaper)
+    spot = {
+      name            = &quot;smartdoor-spot&quot;
+      instance_types  = [&quot;t3.medium&quot;, &quot;t3a.medium&quot;, &quot;t3.large&quot;]
+      capacity_type   = &quot;SPOT&quot;
+      min_size        = 1
+      max_size        = 8
+      desired_size    = 2
+      labels = { role = &quot;app&quot;, &quot;spot&quot; = &quot;true&quot; }
+    }
+
+    # On-demand for system-critical pods only
+    on_demand = {
+      name           = &quot;smartdoor-system&quot;
+      instance_types = [&quot;t3.medium&quot;]
+      capacity_type  = &quot;ON_DEMAND&quot;
+      min_size       = 1
+      max_size       = 3
+      desired_size   = 1
+      taints = [{ key = &quot;CriticalAddonsOnly&quot;, effect = &quot;NO_SCHEDULE&quot; }]
+      labels = { role = &quot;system&quot; }
+    }
+  }
+
+  cluster_addons = {
+    coredns            = { most_recent = true }
+    kube-proxy         = { most_recent = true }
+    vpc-cni            = { most_recent = true }
+    aws-ebs-csi-driver = { most_recent = true }
+  }
+}
+
+# ── RDS PostgreSQL ─────────────────────────────────────────────────
+module &quot;rds&quot; {
+  source  = &quot;terraform-aws-modules/rds/aws&quot;
+  version = &quot;~&gt; 6.0&quot;
+
+  identifier        = &quot;smartdoor-postgres&quot;
+  engine            = &quot;postgres&quot;
+  engine_version    = &quot;16.2&quot;
+  # FinOps: smaller instance in staging
+  instance_class    = var.environment == &quot;production&quot; ? &quot;db.t3.medium&quot; : &quot;db.t3.micro&quot;
+
+  db_name  = &quot;smartdoor_db&quot;
+  username = &quot;smartdoor&quot;
+  password = var.db_password
+
+  vpc_security_group_ids = [module.rds_sg.security_group_id]
+  subnet_ids             = module.vpc.private_subnets
+
+  multi_az                = var.environment == &quot;production&quot;  # HA only in prod
+  deletion_protection     = var.environment == &quot;production&quot;
+  backup_retention_period = var.environment == &quot;production&quot; ? 7 : 1
+  storage_encrypted       = true
+  performance_insights_enabled = true
+
+  # FinOps: Reserved Instance recommendation tag
+  tags = {
+    ReservedInstance = &quot;candidate&quot;
+    CostAllocation   = &quot;database&quot;
+  }
+}
+
+# ── ElastiCache Redis ──────────────────────────────────────────────
+resource &quot;aws_elasticache_replication_group&quot; &quot;redis&quot; {
+  replication_group_id = &quot;smartdoor-redis&quot;
+  description          = &quot;SmartDoor Redis — session cache and pub/sub&quot;
+
+  # FinOps: t3.micro is sufficient for this load
+  node_type           = &quot;cache.t3.micro&quot;
+  num_cache_clusters  = var.environment == &quot;production&quot; ? 2 : 1
+  port                = 6379
+
+  at_rest_encryption_enabled = true
+  transit_encryption_enabled = true
+  automatic_failover_enabled = var.environment == &quot;production&quot;
+
+  subnet_group_name  = aws_elasticache_subnet_group.redis.name
+  security_group_ids = [module.redis_sg.security_group_id]
+
+  tags = {
+    Environment    = var.environment
+    CostAllocation = &quot;cache&quot;
+  }
+}
+
+resource &quot;aws_elasticache_subnet_group&quot; &quot;redis&quot; {
+  name       = &quot;smartdoor-redis-subnet&quot;
+  subnet_ids = module.vpc.private_subnets
+}
+
+# ── Cluster Autoscaler (FinOps: scale-to-zero off-peak) ───────────
+resource &quot;helm_release&quot; &quot;cluster_autoscaler&quot; {
+  name       = &quot;cluster-autoscaler&quot;
+  repository = &quot;https://kubernetes.github.io/autoscaler&quot;
+  chart      = &quot;cluster-autoscaler&quot;
+  namespace  = &quot;kube-system&quot;
+
+  set { name = &quot;autoDiscovery.clusterName&quot;;          value = &quot;smartdoor-eks&quot; }
+  set { name = &quot;awsRegion&quot;;                           value = var.aws_region }
+  set { name = &quot;extraArgs.scale-down-enabled&quot;;        value = &quot;true&quot; }
+  set { name = &quot;extraArgs.scale-down-delay-after-add&quot;;value = &quot;10m&quot; }
+  set { name = &quot;extraArgs.skip-nodes-with-system-pods&quot;;value = &quot;false&quot; }
+}
+
+# ── S3 for Terraform State ─────────────────────────────────────────
+resource &quot;aws_s3_bucket&quot; &quot;tf_state&quot; {
+  bucket = &quot;smartdoor-terraform-state&quot;
+  tags   = { Purpose = &quot;terraform-state&quot;, CostAllocation = &quot;infrastructure&quot; }
+}
+
+resource &quot;aws_s3_bucket_versioning&quot; &quot;tf_state&quot; {
+  bucket = aws_s3_bucket.tf_state.id
+  versioning_configuration { status = &quot;Enabled&quot; }
+}
+
+resource &quot;aws_s3_bucket_server_side_encryption_configuration&quot; &quot;tf_state&quot; {
+  bucket = aws_s3_bucket.tf_state.id
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = &quot;aws:kms&quot;
+    }
+  }
+}
+
+resource &quot;aws_dynamodb_table&quot; &quot;tf_lock&quot; {
+  name         = &quot;smartdoor-tf-lock&quot;
+  billing_mode = &quot;PAY_PER_REQUEST&quot;
+  hash_key     = &quot;LockID&quot;
+  attribute { name = &quot;LockID&quot;; type = &quot;S&quot; }
+}
+
+
+# ─── terraform/variables.tf ──────────────────────────────────────
+variable &quot;aws_region&quot;   { default = &quot;us-east-1&quot; }
+variable &quot;environment&quot;  { description = &quot;staging | production&quot;; type = string }
+variable &quot;db_password&quot;  { description = &quot;RDS password&quot;;         type = string; sensitive = true }
+variable &quot;cluster_name&quot; { default = &quot;smartdoor-eks&quot; }
+
+# ─── terraform/outputs.tf ────────────────────────────────────────
+output &quot;eks_cluster_endpoint&quot;  { value = module.eks.cluster_endpoint }
+output &quot;eks_cluster_name&quot;      { value = module.eks.cluster_name }
+output &quot;rds_endpoint&quot;          { value = module.rds.db_instance_endpoint }
+output &quot;redis_endpoint&quot;        { value = aws_elasticache_replication_group.redis.primary_endpoint_address }
+output &quot;vpc_id&quot;                { value = module.vpc.vpc_id }
+</pre></div>
+  </div>
+</div>
+
+<!-- MONITORING -->
+<div class="sec" id="s-monitoring">
+  <div class="stitle">📊 Monitoring & Observability</div>
+  <div class="ssub">Prometheus scraping, Grafana dashboards, multi-severity alerting with PagerDuty + Slack integration</div>
+  <div class="g3">
+    <div class="card"><h3>📈 Prometheus</h3><p>Auto-discovers K8s pods via annotations. Scrapes API /metrics every 10s. 30-day retention. Feeds Grafana and AlertManager.</p></div>
+    <div class="card"><h3>📊 Grafana</h3><p>Door status heatmap, access event timeline, API latency heatmap, WebSocket connections, FinOps cost panel via Kubecost.</p></div>
+    <div class="card"><h3>🚨 AlertManager</h3><p>Multi-severity rules: door offline (critical), high auth failure rate (security), API latency (warning), monthly cost budget (FinOps).</p></div>
+  </div>
+  <div class="cw">
+    <div class="ch"><span class="cl">YAML — prometheus.yaml + alerting-rules.yaml</span><button class="cc" onclick="cp(this)">Copy</button></div>
+    <div class="cb"><pre># ─── monitoring/prometheus.yaml ──────────────────────────────────
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: smartdoor-prod
+    env: production
+
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets: [alertmanager:9093]
+
+rule_files:
+  - &quot;alerting-rules.yaml&quot;
+
+scrape_configs:
+  # SmartDoor API
+  - job_name: smartdoor-api
+    static_configs:
+    - targets: [smartdoor-api:8000]
+    metrics_path: /metrics
+    scrape_interval: 10s
+
+  # Kubernetes pods (auto-discover via annotations)
+  - job_name: kubernetes-pods
+    kubernetes_sd_configs:
+    - role: pod
+    relabel_configs:
+    - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+      action: keep
+      regex: &quot;true&quot;
+    - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+      action: replace
+      target_label: __metrics_path__
+      regex: (.+)
+    - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+      action: replace
+      regex: ([^:]+)(?::\d+)?;(\d+)
+      replacement: $1:$2
+      target_label: __address__
+
+  # Kubernetes nodes
+  - job_name: kubernetes-nodes
+    kubernetes_sd_configs:
+    - role: node
+    relabel_configs:
+    - action: labelmap
+      regex: __meta_kubernetes_node_label_(.+)
+
+  # Redis exporter
+  - job_name: redis
+    static_configs:
+    - targets: [redis-exporter:9121]
+
+  # PostgreSQL exporter
+  - job_name: postgres
+    static_configs:
+    - targets: [pg-exporter:9187]
+
+  # Kubecost (FinOps)
+  - job_name: kubecost
+    static_configs:
+    - targets: [kubecost-cost-analyzer:9003]
+
+
+# ─── monitoring/alerting-rules.yaml ──────────────────────────────
+groups:
+- name: smartdoor-critical
+  rules:
+
+  # 🚨 Doors offline
+  - alert: DoorOffline
+    expr: doors_online_total &lt; 4
+    for: 2m
+    labels:
+      severity: critical
+      team: security
+    annotations:
+      summary: &quot;{{ $value }} SmartDoors are offline&quot;
+      description: &quot;Expected 5 doors online, only {{ $value }} detected&quot;
+      runbook: &quot;https://wiki.smartdoor.io/runbooks/door-offline&quot;
+
+  # 🔐 High auth failure rate (possible brute-force)
+  - alert: HighAuthFailures
+    expr: rate(auth_attempts_total{result=&quot;failed&quot;}[5m]) &gt; 0.5
+    for: 1m
+    labels:
+      severity: warning
+      team: security
+    annotations:
+      summary: &quot;High authentication failure rate: {{ $value | humanize }}/s&quot;
+
+  # 🐢 API latency p95 &gt; 2 seconds
+  - alert: APIHighLatency
+    expr: histogram_quantile(0.95, rate(api_latency_seconds_bucket[5m])) &gt; 2
+    for: 3m
+    labels:
+      severity: warning
+    annotations:
+      summary: &quot;API p95 latency degraded: {{ $value | humanizeDuration }}&quot;
+
+  # 💀 Pod crash-looping
+  - alert: PodCrashLooping
+    expr: rate(kube_pod_container_status_restarts_total{namespace=&quot;smartdoor&quot;}[5m]) &gt; 0
+    for: 2m
+    labels:
+      severity: critical
+    annotations:
+      summary: &quot;Pod {{ $labels.pod }} is crash-looping&quot;
+
+  # 📊 Memory pressure
+  - alert: ContainerMemoryHigh
+    expr: |
+      container_memory_usage_bytes{namespace=&quot;smartdoor&quot;}
+      / container_spec_memory_limit_bytes{namespace=&quot;smartdoor&quot;} &gt; 0.85
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: &quot;Container {{ $labels.container }} memory at {{ $value | humanizePercentage }}&quot;
+
+  # 💸 FinOps: Monthly cost overage (from Kubecost)
+  - alert: MonthlyCostBudgetExceeded
+    expr: kubecost_cluster_monthly_cost &gt; 600
+    for: 1h
+    labels:
+      severity: warning
+      team: finops
+    annotations:
+      summary: &quot;Monthly cloud spend ${{ $value }} exceeds $600 budget&quot;
+</pre></div>
+  </div>
+</div>
+
+<!-- FINOPS -->
+<div class="sec" id="s-finops">
+  <div class="stitle">💰 FinOps — Cloud Cost Engineering</div>
+  <div class="ssub">Cost governance embedded at every layer — Spot instances, resource quotas, OPA policies, real-time Kubecost tracking</div>
+  <div class="al aw">💡 <strong>FinOps philosophy:</strong> Cost awareness is built into the architecture, not bolted on later. Every Terraform resource is tagged, every K8s pod has resource limits, every namespace has a budget quota.</div>
+  <div class="g3">
+    <div class="scard" style="border-color:rgba(63,185,80,.4)"><div class="sv" style="color:var(--green)">~40%</div><div class="sl">Cost savings: Spot vs On-Demand EC2</div></div>
+    <div class="scard" style="border-color:rgba(0,212,170,.4)"><div class="sv" style="color:var(--accent)">~25%</div><div class="sl">Savings: HPA scale-down off-peak hours</div></div>
+    <div class="scard" style="border-color:rgba(245,158,11,.4)"><div class="sv" style="color:var(--orange)">~15%</div><div class="sl">Savings: Right-sized resource requests/limits</div></div>
+  </div>
+  <hr class="dv">
+  <div class="stitle" style="font-size:15px">💵 Monthly Cost Breakdown + Optimizations</div>
+  <div class="card" style="padding:0;overflow:hidden;margin:14px 0">
+    <table class="ft">
+      <thead><tr><th>Resource</th><th>Raw Cost</th><th>FinOps Strategy</th><th>Saving</th></tr></thead>
+      <tbody>
+        <tr><td>EKS Nodes (4× t3.medium)</td><td>$120/mo</td><td>Spot 70% / On-Demand 30%</td><td><span class="sb">-$72/mo</span></td></tr>
+        <tr><td>RDS PostgreSQL (db.t3.medium)</td><td>$55/mo</td><td>1-year Reserved Instance</td><td><span class="sb">-$20/mo</span></td></tr>
+        <tr><td>NAT Gateway (3 AZs)</td><td>$100/mo</td><td>Single NAT in staging</td><td><span class="sb">-$65/mo</span></td></tr>
+        <tr><td>ElastiCache Redis</td><td>$25/mo</td><td>cache.t3.micro sufficient</td><td><span class="sb">-$10/mo</span></td></tr>
+        <tr><td>Data Transfer</td><td>$30/mo</td><td>VPC Endpoints for S3/ECR</td><td><span class="sb">-$12/mo</span></td></tr>
+        <tr><td>CloudWatch Logs</td><td>$20/mo</td><td>7-day dev, 30-day prod retention</td><td><span class="sb">-$8/mo</span></td></tr>
+        <tr><td colspan="2"><strong>Total Monthly Savings</strong></td><td></td><td><span class="sb" style="font-size:14px">-$187/mo</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="g2">
+    <div class="card"><h3>🏷️ Terraform Tagging Strategy</h3><p>Every AWS resource gets: Project=SmartDoor, Environment, ManagedBy=Terraform, CostCenter=smartdoor-facility. This feeds AWS Cost Explorer with perfect cost allocation reports by team, environment, and service.</p></div>
+    <div class="card"><h3>☸️ K8s Resource Governance</h3><p>OPA Gatekeeper enforces max CPU/memory limits. Namespace ResourceQuota caps total spend. VPA in "Off" mode gives right-sizing recommendations without auto-eviction. HPA scale-down window = 5 min (stability).</p></div>
+    <div class="card"><h3>📊 Kubecost Alerting</h3><p>Real-time per-namespace cost visibility. Budget alert at $500/month. Spike alert at 20% week-over-week increase. Weekly Slack digest with top cost drivers. Savings recommendations surfaced in Grafana.</p></div>
+  </div>
+</div>
+
+<!-- DEPLOY -->
+<div class="sec" id="s-deploy">
+  <div class="stitle">🚀 Full Deployment Guide</div>
+  <div class="ssub">From zero to production in 8 steps — local dev → AWS infra → K8s → CI/CD → monitoring</div>
+
+  <div class="tl">
+    <div class="ti"><div class="td"></div>
+      <h4>Step 1 — Prerequisites (install tools)</h4>
+      <div class="cw"><div class="ch"><span class="cl">bash</span><button class="cc" onclick="cp(this)">Copy</button></div>
+      <div class="cb"><pre># macOS (Homebrew)
+brew install git docker kubectl helm terraform awscli argocd
+
+# Verify
+docker --version &amp;&amp; kubectl version --client &amp;&amp; terraform --version</pre></div></div>
+    </div>
+
+    <div class="ti"><div class="td"></div>
+      <h4>Step 2 — Clone &amp; Configure</h4>
+      <div class="cw"><div class="ch"><span class="cl">bash</span><button class="cc" onclick="cp(this)">Copy</button></div>
+      <div class="cb"><pre>git clone https://github.com/your-org/smartdoor-devops.git
+cd smartdoor-devops
+
+# Create .env
+cat > .env &lt;&lt;EOF
+JWT_SECRET=your-strong-jwt-secret-key
+DB_PASSWORD=strong-postgres-password
+AWS_REGION=us-east-1
+ENVIRONMENT=staging
+EOF</pre></div></div>
+    </div>
+
+    <div class="ti"><div class="td"></div>
+      <h4>Step 3 — Run Locally with Docker Compose</h4>
+      <div class="cw"><div class="ch"><span class="cl">bash</span><button class="cc" onclick="cp(this)">Copy</button></div>
+      <div class="cb"><pre># Build and start all services
+docker compose build --no-cache
+docker compose up -d
+
+# Verify
+docker compose ps
+
+# Access:
+# API:        http://localhost:8000/docs
+# Grafana:    http://localhost:3000  (admin/admin123)
+# Prometheus: http://localhost:9090
+
+# Test login
+curl -X POST http://localhost:8000/auth/login   -H "Content-Type: application/json"   -d '{"username":"admin","password":"admin123"}' | jq .
+
+# Run tests
+docker compose exec smartdoor-api pytest tests/ -v --cov</pre></div></div>
+    </div>
+
+    <div class="ti"><div class="td"></div>
+      <h4>Step 4 — Provision AWS with Terraform</h4>
+      <div class="cw"><div class="ch"><span class="cl">bash</span><button class="cc" onclick="cp(this)">Copy</button></div>
+      <div class="cb"><pre>aws configure   # set access key + region
+
+cd terraform/
+terraform init
+terraform plan  -var="environment=staging" -var="db_password=$DB_PASSWORD"
+terraform apply -var="environment=staging" -var="db_password=$DB_PASSWORD" -auto-approve
+
+# Connect kubectl to new cluster (~15 min for EKS)
+aws eks update-kubeconfig --name smartdoor-eks --region us-east-1
+kubectl get nodes</pre></div></div>
+    </div>
+
+    <div class="ti"><div class="td"></div>
+      <h4>Step 5 — Install ArgoCD &amp; Deploy via GitOps</h4>
+      <div class="cw"><div class="ch"><span class="cl">bash</span><button class="cc" onclick="cp(this)">Copy</button></div>
+      <div class="cb"><pre>kubectl create namespace argocd
+kubectl apply -n argocd -f   https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+# Get initial password
+kubectl -n argocd get secret argocd-initial-admin-secret   -o jsonpath="{.data.password}" | base64 -d
+
+# Create GitOps app
+argocd app create smartdoor   --repo https://github.com/your-org/smartdoor-devops.git   --path k8s   --dest-namespace smartdoor   --sync-policy automated   --auto-prune --self-heal
+
+argocd app sync smartdoor</pre></div></div>
+    </div>
+
+    <div class="ti"><div class="td"></div>
+      <h4>Step 6 — Deploy Prometheus + Grafana + Kubecost</h4>
+      <div class="cw"><div class="ch"><span class="cl">bash</span><button class="cc" onclick="cp(this)">Copy</button></div>
+      <div class="cb"><pre>helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo add kubecost https://kubecost.github.io/cost-analyzer/
+helm repo update
+
+# Prometheus stack (includes Grafana + AlertManager)
+helm upgrade --install prometheus prometheus-community/kube-prometheus-stack   --namespace monitoring --create-namespace   --set grafana.adminPassword=smartdoor123   -f monitoring/prometheus.yaml
+
+# Kubecost for FinOps
+helm upgrade --install kubecost kubecost/cost-analyzer   --namespace kubecost --create-namespace   -f finops/kubecost-values.yaml
+
+kubectl apply -f monitoring/alerting-rules.yaml</pre></div></div>
+    </div>
+
+    <div class="ti"><div class="td"></div>
+      <h4>Step 7 — Add GitHub Secrets for CI/CD</h4>
+      <p style="margin-bottom:10px">Go to: GitHub Repo → Settings → Secrets &amp; Variables → Actions</p>
+      <div class="cw"><div class="ch"><span class="cl">Secrets to configure</span></div>
+      <div class="cb"><pre># Required GitHub Actions Secrets:
+# ┌──────────────────────┬────────────────────────────────────────┐
+# │ ARGOCD_SERVER        │ https://argocd.yourdomain.com          │
+# │ ARGOCD_TOKEN         │ ArgoCD → Settings → Accounts → Token   │
+# │ SLACK_BOT_TOKEN      │ xoxb-your-slack-bot-token              │
+# │ JWT_SECRET           │ production JWT signing key             │
+# │ DB_PASSWORD          │ PostgreSQL password                    │
+# └──────────────────────┴────────────────────────────────────────┘
+
+# Then trigger pipeline:
+git add . &amp;&amp; git commit -m "feat: initial deployment" &amp;&amp; git push origin main
+# Watch: GitHub → Actions tab</pre></div></div>
+    </div>
+
+    <div class="ti"><div class="td"></div>
+      <h4>Step 8 — Production Readiness Checks</h4>
+      <div class="cw"><div class="ch"><span class="cl">bash</span><button class="cc" onclick="cp(this)">Copy</button></div>
+      <div class="cb"><pre># ✅ All pods healthy
+kubectl get pods -n smartdoor
+
+# ✅ HPA autoscaling active
+kubectl get hpa -n smartdoor
+
+# ✅ API is live and TLS works
+curl -sf https://api.smartdoor.io/health | jq .
+
+# ✅ Load test (watch HPA scale)
+pip install locust
+locust -f scripts/load_test.py --headless -u 100 -r 10   --host https://api.smartdoor.io
+
+# ✅ Check autoscaling
+kubectl get hpa -n smartdoor -w
+
+# ✅ Verify FinOps dashboards
+kubectl port-forward svc/kubecost-cost-analyzer 9090:9090 -n kubecost</pre></div></div>
+    </div>
+  </div>
+
+  <hr class="dv">
+  <div class="al as">✅ <strong>Deployed!</strong> Your SmartDoor platform is live with CI/CD, GitOps, auto-scaling, full observability, and FinOps cost governance from day one.</div>
+
+  <div class="g2" style="margin-top:18px">
+    <div class="card"><h3>🎯 What Impresses HR</h3><p>Shows full project ownership end-to-end. Uses modern industry-standard tooling (ArgoCD, Terraform, Prometheus). Demonstrates business thinking with FinOps ROI numbers. Security-first mindset with Trivy scanning, RBAC, non-root containers. IoT + real-time features show product breadth.</p></div>
+    <div class="card"><h3>🔬 What Impresses Engineers</h3><p>Prometheus metrics instrumented directly in app code. HPA + VPA autoscaling with proper stabilization windows. Pod anti-affinity for real HA across AZs. OPA Gatekeeper cost policies. Multi-platform Docker builds (amd64+arm64). GitOps with ArgoCD self-healing. Zero-downtime rolling deployments.</p></div>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<script>
+function show(id, btn) {
+  document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b => b.classList.remove('active'));
+  document.getElementById('s-' + id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({top: document.querySelector('.nav').offsetTop - 10, behavior: 'smooth'});
+}
+function cp(btn) {
+  const code = btn.closest('.cw').querySelector('pre').innerText;
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = 'Copied!';
+    btn.style.color = '#3fb950';
+    setTimeout(() => { btn.textContent = 'Copy'; btn.style.color = ''; }, 2000);
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+# ─── monitoring/prometheus.yaml ──────────────────────────────────
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: smartdoor-prod
+    env: production
+
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets: [alertmanager:9093]
+
+rule_files:
+  - "alerting-rules.yaml"
+
+scrape_configs:
+  # SmartDoor API
+  - job_name: smartdoor-api
+    static_configs:
+    - targets: [smartdoor-api:8000]
+    metrics_path: /metrics
+    scrape_interval: 10s
+
+  # Kubernetes pods (auto-discover via annotations)
+  - job_name: kubernetes-pods
+    kubernetes_sd_configs:
+    - role: pod
+    relabel_configs:
+    - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+      action: keep
+      regex: "true"
+    - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+      action: replace
+      target_label: __metrics_path__
+      regex: (.+)
+    - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+      action: replace
+      regex: ([^:]+)(?::\d+)?;(\d+)
+      replacement: $1:$2
+      target_label: __address__
+
+  # Kubernetes nodes
+  - job_name: kubernetes-nodes
+    kubernetes_sd_configs:
+    - role: node
+    relabel_configs:
+    - action: labelmap
+      regex: __meta_kubernetes_node_label_(.+)
+
+  # Redis exporter
+  - job_name: redis
+    static_configs:
+    - targets: [redis-exporter:9121]
+
+  # PostgreSQL exporter
+  - job_name: postgres
+    static_configs:
+    - targets: [pg-exporter:9187]
+
+  # Kubecost (FinOps)
+  - job_name: kubecost
+    static_configs:
+    - targets: [kubecost-cost-analyzer:9003]
+
+
+# ─── monitoring/alerting-rules.yaml ──────────────────────────────
+groups:
+- name: smartdoor-critical
+  rules:
+
+  # 🚨 Doors offline
+  - alert: DoorOffline
+    expr: doors_online_total < 4
+    for: 2m
+    labels:
+      severity: critical
+      team: security
+    annotations:
+      summary: "{{ $value }} SmartDoors are offline"
+      description: "Expected 5 doors online, only {{ $value }} detected"
+      runbook: "https://wiki.smartdoor.io/runbooks/door-offline"
+
+  # 🔐 High auth failure rate (possible brute-force)
+  - alert: HighAuthFailures
+    expr: rate(auth_attempts_total{result="failed"}[5m]) > 0.5
+    for: 1m
+    labels:
+      severity: warning
+      team: security
+    annotations:
+      summary: "High authentication failure rate: {{ $value | humanize }}/s"
+
+  # 🐢 API latency p95 > 2 seconds
+  - alert: APIHighLatency
+    expr: histogram_quantile(0.95, rate(api_latency_seconds_bucket[5m])) > 2
+    for: 3m
+    labels:
+      severity: warning
+    annotations:
+      summary: "API p95 latency degraded: {{ $value | humanizeDuration }}"
+
+  # 💀 Pod crash-looping
+  - alert: PodCrashLooping
+    expr: rate(kube_pod_container_status_restarts_total{namespace="smartdoor"}[5m]) > 0
+    for: 2m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Pod {{ $labels.pod }} is crash-looping"
+
+  # 📊 Memory pressure
+  - alert: ContainerMemoryHigh
+    expr: |
+      container_memory_usage_bytes{namespace="smartdoor"}
+      / container_spec_memory_limit_bytes{namespace="smartdoor"} > 0.85
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Container {{ $labels.container }} memory at {{ $value | humanizePercentage }}"
+
+  # 💸 FinOps: Monthly cost overage (from Kubecost)
+  - alert: MonthlyCostBudgetExceeded
+    expr: kubecost_cluster_monthly_cost > 600
+    for: 1h
+    labels:
+      severity: warning
+      team: finops
+    annotations:
+      summary: "Monthly cloud spend ${{ $value }} exceeds $600 budget"
